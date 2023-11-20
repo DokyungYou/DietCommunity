@@ -38,5 +38,10 @@ public class GlobalExceptionHandler {
         .body(new ErrorResponse(e.getErrorCode()));
   }
 
+  @ExceptionHandler(InvalidAuthCodeException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidAuthCodeException(InvalidAuthCodeException e) {
+    log.error("{} is occurred", e.getErrorCode());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getErrorCode()));
+  }
 
 }

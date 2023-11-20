@@ -52,4 +52,13 @@ public class MemberService {
   }
 
 
+    public void validateResendAuthMemberEmail(String email){
+    Member member = memberRepository.findByEmail(email)
+        .orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_MEMBER));
+
+    if(member.getStatus() == MemberStatus.ACTIVATED){
+      throw new MemberException(ErrorCode.ALREADY_AUTHENTICATED_MEMBER);
+    }
+  }
+
 }

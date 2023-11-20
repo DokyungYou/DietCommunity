@@ -61,4 +61,8 @@ public class Member {
   private LocalDateTime modifiedAt;
 
 
+  public void activeMemberStatus(){
+    this.status = MemberStatus.ACTIVATED;
+  }
+
 }

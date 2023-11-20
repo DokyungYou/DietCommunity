@@ -50,13 +50,13 @@ public class EmailService {
         + " <head>\n"
         + " <meta charset=\"UTF-8\" />\n"
         + " <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n"
-        + " <title>Solumon</title>\n"
+        + " <title>DietaryCommunity</title>\n"
         + " </head>\n"
         + " <body>\n"
-        + " <h1> 안녕하세요 DietaryRecord 입니다. </h1>\n"
+        + " <h1> 안녕하세요 DietaryCommunity 입니다. </h1>\n"
         + " <h3> 이메일 인증을 완료하려면 아래 링크를 클릭하세요. </h3>\n"
         + " <div style=\"align-self: center; border: 5px solid black; width: 50%; height: 10%;\">\n"
-        + "<a href=\"" + linkAddress + "\">이메일 인증</a>"
+        + "<a href=\"" + linkAddress + "\">계정 활성화하기</a>"
         + " </body>\n"
         + "</html>";
 
