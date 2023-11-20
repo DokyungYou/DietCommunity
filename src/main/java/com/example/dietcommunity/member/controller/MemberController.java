@@ -3,7 +3,9 @@ package com.example.dietcommunity.member.controller;
 import com.example.dietcommunity.common.mail.EmailService;
 import com.example.dietcommunity.common.mail.RedisEmailService;
 import com.example.dietcommunity.member.entity.Member;
+import com.example.dietcommunity.member.model.request.LoginGeneralRequest;
 import com.example.dietcommunity.member.model.request.SignUpGeneralRequest;
+import com.example.dietcommunity.member.model.response.LoginGeneralResponse;
 import com.example.dietcommunity.member.model.response.SignUpGeneralResponse;
 import com.example.dietcommunity.member.service.MemberService;
 import java.util.UUID;
@@ -40,7 +42,7 @@ public class MemberController {
   }
 
 
-    /**
+  /**
    * 계정인증 (이메일로 전송될 url)
    * @param email
    * @param authCode
@@ -64,7 +66,7 @@ public class MemberController {
    */
   @GetMapping("/send-email/authenticate-member")
   public ResponseEntity<Void> sendEmailAuthenticateMember(
-      @RequestParam(name = "email") String email){
+      @RequestParam(name = "email") String email) {
 
     String authCode = String.valueOf(UUID.randomUUID());
     memberService.validateResendAuthMemberEmail(email);
@@ -75,5 +77,17 @@ public class MemberController {
     return ResponseEntity.ok().build();
   }
 
+  /**
+   * 일반 로그인
+   *
+   * @param request
+   * @return
+   */
+  @PostMapping("/login/general")
+  public ResponseEntity<LoginGeneralResponse> loginGeneral(@Valid @RequestBody LoginGeneralRequest request) {
+
+    return ResponseEntity
+        .ok(LoginGeneralResponse.fromMemberAuthPair(memberService.loginGeneral(request)));
+  }
 
 }
