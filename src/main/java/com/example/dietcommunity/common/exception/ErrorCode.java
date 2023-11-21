@@ -11,11 +11,20 @@ public enum ErrorCode {
   INVALID_INPUT_VALUE("유효하지 않은 입력값이 있습니다."),
 
 
+  // SecurityException
+  NOT_FOUND_TOKEN_SET("해당 accessToken으로 저장된 token을 찾을 수 없습니다."),
+  INVALID_REFRESH_TOKEN("재로그인해주세요. [RefreshToken 만료]"),
+  INVALID_TOKEN("유효하지 않은 토큰입니다."),
+
+
+
   // MailException
   FAIL_TO_SEND_MAIL("이메일 전송 실패, 다시 시도해주세요."),
 
   // InvalidAuthCodeException
   INVALID_AUTH_CODE("인증코드가 일치하지않거나 만료되었습니다."),
+
+
 
 
   // MemberException

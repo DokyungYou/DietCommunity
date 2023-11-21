@@ -1,5 +1,9 @@
-package com.example.dietcommunity.global.config;
+package com.example.dietcommunity.common.config;
 
+import com.example.dietcommunity.common.security.AccessDeniedHandlerCustom;
+import com.example.dietcommunity.common.security.AuthenticationEntryPointCustom;
+import com.example.dietcommunity.common.security.JwtAuthenticationFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,7 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @RequiredArgsConstructor
@@ -15,6 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
+  private final ObjectMapper objectMapper;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Bean
   protected SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -39,6 +45,19 @@ public class SecurityConfig {
 
         .antMatchers().authenticated() // 인증받은 사람이면 모두 가능
         .anyRequest().authenticated(); // 그 외의 요청들은 인증받은 사람이면 모두 가능
+
+
+    // exception Handler
+    httpSecurity.exceptionHandling()
+        .authenticationEntryPoint(new AuthenticationEntryPointCustom(objectMapper))
+        .accessDeniedHandler(new AccessDeniedHandlerCustom());
+
+
+    // jwt filter
+    httpSecurity.addFilterBefore(jwtAuthenticationFilter,
+        UsernamePasswordAuthenticationFilter.class);
+
+
 
 
     return httpSecurity.build();
