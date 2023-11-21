@@ -15,6 +15,7 @@ public enum ErrorCode {
   NOT_FOUND_TOKEN_SET("해당 accessToken으로 저장된 token을 찾을 수 없습니다."),
   INVALID_REFRESH_TOKEN("재로그인해주세요. [RefreshToken 만료]"),
   INVALID_TOKEN("유효하지 않은 토큰입니다."),
+  LOGOUT_OUT("로그아웃 상태인 계정입니다."),
 
 
 

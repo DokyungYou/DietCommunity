@@ -44,13 +44,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     try {
+      // redis에서 저장했던 토큰set을 가져올 수 있음
+      MemberAuthToken memberAuthToken = memberTokenRedisRepository.findByAccessToken(accessToken)
+          .orElseThrow(() -> new SecurityExceptionCustom(ErrorCode.NOT_FOUND_TOKEN_SET));
 
-      // AccessToken의 유효성 검증 실패 (기한만료)
-      if (!jwtTokenProvider.validateToken(accessToken)) {
-
-        // redis에서 저장했던 토큰set을 가져올 수 있음
-        MemberAuthToken memberAuthToken = memberTokenRedisRepository.findByAccessToken(accessToken)
-            .orElseThrow(() -> new SecurityExceptionCustom(ErrorCode.NOT_FOUND_TOKEN_SET));
+      // Redis 에서 토큰set을 가져오는 것에 성공했다면 토큰형식자체는 유효한 것이니 기한만 확인해주면 됨
+      if (!jwtTokenProvider.validateToken(accessToken)) {  // AccessToken 의 유효성 검증 실패 (기한만료)
 
         // RefreshToken도 기한만료 시 -> 재로그인하여 토큰Set 을 새로 발급받아야함
         if (!jwtTokenProvider.validateToken(memberAuthToken.getRefreshToken())) {
@@ -63,6 +62,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         accessToken = jwtTokenProvider.reIssue(memberAuthToken);
         response.setHeader(TOKEN_HEADER, accessToken);
 
+      }
+      // 유효한 accessToken 이어도 로그아웃상태인지 확인해야함
+      if ("Logout".equals(memberAuthToken.getRefreshToken())) {
+        throw new SecurityExceptionCustom(ErrorCode.LOGOUT_OUT);
       }
 
       // 유효한 AccessToken 으로 authentication 을 생성하여 SecurityContextHolder 에 넣어준다.

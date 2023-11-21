@@ -12,6 +12,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
 
+  // filter 내에서 발생한 SecurityExceptionCustom 처리하는데 사용되는 핸들러 X
+  @ExceptionHandler(SecurityExceptionCustom.class)
+  public ResponseEntity<ErrorResponse> handleSecurityExceptionCustom(SecurityExceptionCustom e) {
+
+    log.error("errorCode: {}", e.getErrorCode());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(new ErrorResponse(e.getErrorCode()));
+
+  }
+
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 

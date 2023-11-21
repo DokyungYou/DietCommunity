@@ -2,6 +2,7 @@ package com.example.dietcommunity.member.service;
 
 import com.example.dietcommunity.common.exception.ErrorCode;
 import com.example.dietcommunity.common.exception.MemberException;
+import com.example.dietcommunity.common.exception.SecurityExceptionCustom;
 import com.example.dietcommunity.common.security.JwtTokenProvider;
 import com.example.dietcommunity.member.entity.Member;
 import com.example.dietcommunity.member.entity.MemberAuthToken;
@@ -101,5 +102,17 @@ public class MemberService {
     MemberAuthToken savedToken = memberTokenRedisRepository.save(new MemberAuthToken(accessToken, refreshToken));
 
     return Pair.of(member, savedToken);
+  }
+
+  @Transactional
+  public void logout(String accessToken) {
+
+    MemberAuthToken memberAuthToken = memberTokenRedisRepository.findByAccessToken(accessToken)
+        .orElseThrow(() -> new SecurityExceptionCustom(ErrorCode.NOT_FOUND_TOKEN_SET));
+
+    // 재발급용이었던 refreshToken 자리에 Logout 문자로 바꿔넣기
+      memberAuthToken.setRefreshToken("Logout");
+      memberTokenRedisRepository.save(memberAuthToken);
+
   }
 }
