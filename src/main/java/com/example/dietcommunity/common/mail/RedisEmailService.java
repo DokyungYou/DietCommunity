@@ -20,7 +20,11 @@ public class RedisEmailService {
 
 
   public void saveAuthEmailCode(String email, String authCode) {
-    redisAuthEmailTemplate.opsForValue().set(email, authCode, Duration.ofMinutes(1));
+    redisAuthEmailTemplate.opsForValue().set(email, authCode, Duration.ofMinutes(10));
+  }
+
+  public void deleteAuthEmail(String email){
+    redisAuthEmailTemplate.delete(email);
   }
 
 

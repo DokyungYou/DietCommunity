@@ -4,6 +4,7 @@ import com.example.dietcommunity.common.mail.EmailService;
 import com.example.dietcommunity.common.mail.RedisEmailService;
 import com.example.dietcommunity.common.security.MemberDetails;
 import com.example.dietcommunity.member.entity.Member;
+import com.example.dietcommunity.member.model.request.FindPasswordRequest;
 import com.example.dietcommunity.member.model.request.LoginGeneralRequest;
 import com.example.dietcommunity.member.model.request.SignUpGeneralRequest;
 import com.example.dietcommunity.member.model.response.LoginGeneralResponse;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -39,7 +41,7 @@ public class MemberController {
     Member member = memberService.signUpGeneralMember(request);
 
     redisEmailService.saveAuthEmailCode(member.getEmail(), authCode);
-    emailService.sendAuthEmail(member.getEmail(), authCode);
+    emailService.sendAuthEmailMessage(member.getEmail(), authCode);
 
     return ResponseEntity.ok(new SignUpGeneralResponse(member));
   }
@@ -77,7 +79,7 @@ public class MemberController {
 
     redisEmailService.deleteAuthEmail(email);
     redisEmailService.saveAuthEmailCode(email, authCode);
-    emailService.sendAuthEmail(email, authCode);
+    emailService.sendAuthEmailMessage(email, authCode);
 
     return ResponseEntity.ok().build();
   }
@@ -106,5 +108,24 @@ public class MemberController {
 
     return ResponseEntity.ok().build();
   }
+
+
+
+  @GetMapping("/account/find-accountId")
+  public ResponseEntity<Void> findAccountId(@RequestParam String email) {
+
+    emailService.sendFindAccountIdMessage(email,memberService.getMemberAccountId(email));
+    return ResponseEntity.ok().build();
+  }
+
+  @PatchMapping("/account/find-password")
+  public ResponseEntity<Void> findPassword(@Valid @RequestBody FindPasswordRequest request) {
+
+    String temporaryPassword = memberService.setTemporaryPassword(request.getEmail(),request.getAccountId());
+    emailService.sendFindPasswordMessage(request.getEmail(),temporaryPassword);
+
+    return ResponseEntity.ok().build();
+  }
+
 
 }

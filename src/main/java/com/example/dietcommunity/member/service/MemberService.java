@@ -12,12 +12,15 @@ import com.example.dietcommunity.member.repository.MemberRepository;
 import com.example.dietcommunity.member.repository.MemberTokenRedisRepository;
 import com.example.dietcommunity.member.type.MemberRole;
 import com.example.dietcommunity.member.type.MemberStatus;
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class MemberService {
@@ -104,6 +107,8 @@ public class MemberService {
     return Pair.of(member, savedToken);
   }
 
+
+
   @Transactional
   public void logout(String accessToken) {
 
@@ -111,8 +116,42 @@ public class MemberService {
         .orElseThrow(() -> new SecurityExceptionCustom(ErrorCode.NOT_FOUND_TOKEN_SET));
 
     // 재발급용이었던 refreshToken 자리에 Logout 문자로 바꿔넣기
-      memberAuthToken.setRefreshToken("Logout");
-      memberTokenRedisRepository.save(memberAuthToken);
+    memberAuthToken.setRefreshToken("Logout");
+    memberTokenRedisRepository.save(memberAuthToken);
 
   }
+
+
+
+  @Transactional
+  public String setTemporaryPassword(String email, String accountId) {
+    Member member = memberRepository.findByEmailAndAccountId(email, accountId)
+        .orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_MEMBER));
+
+    String temporaryPassword = createTemporaryPassword();
+
+    member.updatePassword(passwordEncoder.encode(temporaryPassword));
+    memberRepository.save(member);
+
+    return temporaryPassword;
+  }
+
+
+  private String createTemporaryPassword() {
+    StringBuilder sb = new StringBuilder();
+    int passwordLength = ThreadLocalRandom.current().nextInt(8, 15 + 1);
+    for (int i = 0; i < passwordLength; i++) {
+      sb.append((char) ThreadLocalRandom.current().nextInt(33, 127));
+    }
+    return sb.toString();
+
+  }
+
+  public String getMemberAccountId(String email) {
+    Member member = memberRepository.findByEmail(email)
+        .orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_MEMBER));
+
+    return member.getAccountId();
+  }
 }
+

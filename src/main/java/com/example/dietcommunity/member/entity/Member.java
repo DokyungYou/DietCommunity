@@ -5,6 +5,7 @@ import com.example.dietcommunity.member.type.MemberStatus;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -17,7 +18,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@EntityListeners(AuditingEntityListener.class)
 @Builder
 @Getter
 @AllArgsConstructor
@@ -63,6 +66,10 @@ public class Member {
 
   public void activeMemberStatus(){
     this.status = MemberStatus.ACTIVATED;
+  }
+
+  public void updatePassword(String encodedPassword){
+    this.password = encodedPassword;
   }
 
 }

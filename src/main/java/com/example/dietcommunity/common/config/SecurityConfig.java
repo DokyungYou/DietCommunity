@@ -39,6 +39,8 @@ public class SecurityConfig {
             "/member/authenticate-email",
             "/member/send-email/authenticate-member",
             "/member/login/**" ,
+            "/member/account/find-accountId",
+            "/member/account/find-password",
             "/exception")
         .permitAll()
 
