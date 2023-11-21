@@ -115,9 +115,7 @@ public class MemberService {
     MemberAuthToken memberAuthToken = memberTokenRedisRepository.findByAccessToken(accessToken)
         .orElseThrow(() -> new SecurityExceptionCustom(ErrorCode.NOT_FOUND_TOKEN_SET));
 
-    // 재발급용이었던 refreshToken 자리에 Logout 문자로 바꿔넣기
-    memberAuthToken.setRefreshToken("Logout");
-    memberTokenRedisRepository.save(memberAuthToken);
+    memberTokenRedisRepository.delete(memberAuthToken);
 
   }
 
