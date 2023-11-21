@@ -104,7 +104,7 @@ public class MemberController {
   ) {
 
     memberService.logout(accessToken);
-    log.info("사용자가 로그아웃했습니다. memberId: {}", memberDetails.getMember().getMemberId());
+    log.info("사용자가 로그아웃했습니다. memberId: {}", memberDetails.getMemberId());
 
     return ResponseEntity.ok().build();
   }

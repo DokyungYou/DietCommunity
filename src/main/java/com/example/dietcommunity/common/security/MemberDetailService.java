@@ -23,7 +23,7 @@ public class MemberDetailService implements UserDetailsService {
     Member member = memberRepository.findByEmail(username)
         .orElseThrow(() -> new SecurityExceptionCustom(ErrorCode.NOT_FOUND_MEMBER)); // 필터에서 돌아가는 부분이라 시큐리티 예외로 던졌음
 
-    return new MemberDetails(member);
+    return MemberDetails.fromMember(member);
   }
 
 }
