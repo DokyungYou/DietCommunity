@@ -25,7 +25,7 @@ public class MailConfig {
 
 
   @Bean
-  public JavaMailSender javaMailService() {
+  public JavaMailSender JavaMailSender() {
     JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
 
     javaMailSender.setHost(this.host);
@@ -40,7 +40,7 @@ public class MailConfig {
     return javaMailSender;
   }
 
-  public Properties getMaliProperties(){
+  private Properties getMaliProperties(){
     Properties properties = new Properties();
     properties.setProperty("mail.transport.protocol", "smtp"); // 프로토콜 설정
     properties.setProperty("mail.smtp.auth", "true"); // smtp 인증
