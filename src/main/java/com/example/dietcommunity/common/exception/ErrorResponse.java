@@ -15,6 +15,7 @@ import org.springframework.validation.BindingResult;
 public class ErrorResponse {
 
   private String errorCode;
+  private int httpStatus;
   private String errorMessage;
 
   @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -25,6 +26,7 @@ public class ErrorResponse {
   // 커스텀에러용
   public ErrorResponse(ErrorCode errorCode) {
     this.errorCode = errorCode.name();
+    this.httpStatus = errorCode.getHttpStatus();
     this.errorMessage = errorCode.getDescription();
   }
 
@@ -32,6 +34,7 @@ public class ErrorResponse {
   // MethodArgumentNotValidException 용
   public ErrorResponse(ErrorCode errorCode, BindingResult bindingResult) {
     this.errorCode = errorCode.name();
+    this.httpStatus = errorCode.getHttpStatus();
     this.errorMessage = errorCode.getDescription();
     this.errors = FieldErrorCustom.getFieldErrors(bindingResult);
   }

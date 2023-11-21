@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handleSecurityExceptionCustom(SecurityExceptionCustom e) {
 
     log.error("errorCode: {}", e.getErrorCode());
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    return ResponseEntity.status(e.getErrorCode().getHttpStatus())
         .body(new ErrorResponse(e.getErrorCode()));
 
   }
@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 
     log.error("errorCode: {}", ErrorCode.INVALID_INPUT_VALUE);
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    return ResponseEntity.status(400)
         .body(new ErrorResponse(ErrorCode.INVALID_INPUT_VALUE, e.getBindingResult()));
 
   }
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handleMemberException(MemberException e) {
 
     log.error("errorCode: {}", e.getErrorCode());
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    return ResponseEntity.status(e.getErrorCode().getHttpStatus())
         .body(new ErrorResponse(e.getErrorCode()));
 
   }
@@ -45,14 +45,16 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handleMailException(MailException e) {
 
     log.error("{} is occurred", e.getErrorCode());
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    return ResponseEntity.status(e.getErrorCode().getHttpStatus())
         .body(new ErrorResponse(e.getErrorCode()));
   }
 
   @ExceptionHandler(InvalidAuthCodeException.class)
   public ResponseEntity<ErrorResponse> handleInvalidAuthCodeException(InvalidAuthCodeException e) {
+
     log.error("{} is occurred", e.getErrorCode());
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getErrorCode()));
+    return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+        .body(new ErrorResponse(e.getErrorCode()));
   }
 
 }
