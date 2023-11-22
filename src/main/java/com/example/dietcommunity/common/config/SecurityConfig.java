@@ -35,12 +35,12 @@ public class SecurityConfig {
         // 회원가입, 로그인, 아이디찾기, 비밀번호 찾기는 모두에게 허용
         .authorizeRequests()
         .antMatchers("/",
-            "/member/sign-up/**",
-            "/member/authenticate-email",
-            "/member/send-email/authenticate-member",
-            "/member/login/**" ,
-            "/member/account/find-accountId",
-            "/member/account/find-password",
+            "/members/signup-general",
+            "/members/authentication",
+            "/members/resending-authentication-email",
+            "/members/login-general" ,
+            "/members/help/finding-id",
+            "/members/help/finding-password",
             "/exception")
         .permitAll()
 

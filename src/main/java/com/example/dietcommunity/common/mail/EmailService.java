@@ -46,7 +46,7 @@ public class EmailService {
    */
   public void sendAuthEmailMessage(String toEmail, String authCode){
 
-    String linkAddress = "http://localhost:8080/member/authenticate-email?email=" + toEmail + "&authCode=" + authCode;
+    String linkAddress = "http://localhost:8080/members/authentication?email=" + toEmail + "&authCode=" + authCode;
 
     String message = "\n"
         + "<!DOCTYPE html>\n"
