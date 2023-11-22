@@ -72,4 +72,8 @@ public class Member {
     this.password = encodedPassword;
   }
 
+  public void withdrawMember(){
+    this.status = MemberStatus.WITHDRAWN;
+  }
+
 }

@@ -4,6 +4,7 @@ import com.example.dietcommunity.common.exception.ErrorCode;
 import com.example.dietcommunity.common.exception.MemberException;
 import com.example.dietcommunity.common.exception.SecurityExceptionCustom;
 import com.example.dietcommunity.common.security.JwtTokenProvider;
+import com.example.dietcommunity.common.security.MemberDetails;
 import com.example.dietcommunity.member.entity.Member;
 import com.example.dietcommunity.member.entity.MemberAuthToken;
 import com.example.dietcommunity.member.model.request.LoginGeneralRequest;
@@ -108,7 +109,6 @@ public class MemberService {
   }
 
 
-
   @Transactional
   public void logout(String accessToken) {
 
@@ -118,7 +118,6 @@ public class MemberService {
     memberTokenRedisRepository.delete(memberAuthToken);
 
   }
-
 
 
   @Transactional
@@ -150,6 +149,15 @@ public class MemberService {
         .orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_MEMBER));
 
     return member.getAccountId();
+  }
+
+  @Transactional
+  public Member withdrawMember(MemberDetails memberDetails) {
+
+    Member member = memberDetails.toMember();
+    member.withdrawMember();
+
+    return memberRepository.save(member);
   }
 }
 

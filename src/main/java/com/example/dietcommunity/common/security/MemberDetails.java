@@ -59,6 +59,22 @@ public class MemberDetails implements UserDetails {
         .build();
   }
 
+  public Member toMember() {
+    return Member.builder()
+        .memberId(this.getMemberId())
+        .email(this.getEmail())
+        .accountId(this.getAccountId())
+        .nickname(this.getNickname())
+        .password(this.getPassword())
+        .selfIntroduction(this.getSelfIntroduction())
+        .finalGoalWeight(this.getFinalGoalWeight())
+        .status(this.getStatus())
+        .role(this.getRole())
+        .registeredAt(this.getRegisteredAt())
+        .modifiedAt(this.getModifiedAt())
+        .build();
+  }
+
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
