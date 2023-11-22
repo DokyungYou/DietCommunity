@@ -5,6 +5,7 @@ import com.example.dietcommunity.common.exception.InvalidAuthCodeException;
 import com.example.dietcommunity.common.exception.MemberException;
 import com.example.dietcommunity.member.entity.Member;
 import com.example.dietcommunity.member.repository.MemberRepository;
+import com.example.dietcommunity.member.type.MemberStatus;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -38,6 +39,11 @@ public class RedisEmailService {
     // 계정을 활성화
     Member member = memberRepository.findByEmail(email)
         .orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_MEMBER));
+
+    if(member.getStatus() == MemberStatus.ACTIVATED){
+      throw new MemberException(ErrorCode.ALREADY_AUTHENTICATED_MEMBER);
+    }
+
     member.activeMemberStatus();
     memberRepository.save(member);
   }
