@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -27,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/member")
+@RequestMapping("/members")
 @RestController
 public class MemberController {
 
@@ -35,7 +36,9 @@ public class MemberController {
   private final EmailService emailService;
   private final RedisEmailService redisEmailService;
 
-  @PostMapping("/sign-up/general")
+
+
+  @PostMapping("/signup-general")
   public ResponseEntity<SignUpGeneralResponse> signUpGeneral(@Valid @RequestBody SignUpGeneralRequest request) {
     String authCode = String.valueOf(UUID.randomUUID());
     Member member = memberService.signUpGeneralMember(request);
@@ -54,7 +57,7 @@ public class MemberController {
    * @param authCode
    * @return
    */
-  @GetMapping("/authenticate-email")
+  @GetMapping("/authentication")
   public ResponseEntity<Void> authenticateEmail(
       @RequestParam(name = "email") String email,
       @RequestParam(name = "authCode") String authCode
@@ -70,7 +73,7 @@ public class MemberController {
    * 해당이메일로 전송 X or 인증코드 만료 시 재발송
    * @return
    */
-  @GetMapping("/send-email/authenticate-member")
+  @GetMapping("/resending-authentication-email")
   public ResponseEntity<Void> sendEmailAuthenticateMember(
       @RequestParam(name = "email") String email) {
 
@@ -90,7 +93,7 @@ public class MemberController {
    * @param request
    * @return
    */
-  @PostMapping("/login/general")
+  @PostMapping("/login-general")
   public ResponseEntity<LoginGeneralResponse> loginGeneral(@Valid @RequestBody LoginGeneralRequest request) {
 
     return ResponseEntity
@@ -111,14 +114,14 @@ public class MemberController {
 
 
 
-  @GetMapping("/account/find-accountId")
+  @GetMapping("/help/finding-id")
   public ResponseEntity<Void> findAccountId(@RequestParam String email) {
 
     emailService.sendFindAccountIdMessage(email,memberService.getMemberAccountId(email));
     return ResponseEntity.ok().build();
   }
 
-  @PatchMapping("/account/find-password")
+  @PatchMapping("/help/finding-password")
   public ResponseEntity<Void> findPassword(@Valid @RequestBody FindPasswordRequest request) {
 
     String temporaryPassword = memberService.setTemporaryPassword(request.getEmail(),request.getAccountId());
