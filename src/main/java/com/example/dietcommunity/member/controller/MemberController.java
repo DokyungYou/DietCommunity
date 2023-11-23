@@ -7,14 +7,17 @@ import com.example.dietcommunity.member.entity.Member;
 import com.example.dietcommunity.member.model.request.FindPasswordRequest;
 import com.example.dietcommunity.member.model.request.LoginGeneralRequest;
 import com.example.dietcommunity.member.model.request.SignUpGeneralRequest;
+import com.example.dietcommunity.member.model.response.FollowingDto;
 import com.example.dietcommunity.member.model.response.LoginGeneralResponse;
 import com.example.dietcommunity.member.model.response.SignUpGeneralResponse;
 import com.example.dietcommunity.member.model.response.WithdrawResponse;
 import com.example.dietcommunity.member.service.MemberService;
+import com.example.dietcommunity.member.type.FollowingType;
 import java.util.UUID;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -160,7 +163,28 @@ public class MemberController {
       @PathVariable long memberId,
       @AuthenticationPrincipal MemberDetails memberDetails){
 
-    memberService.removeFollow(memberDetails, memberId);
+    memberService.removeFollowing(memberDetails, memberId);
     return ResponseEntity.ok().build();
   }
+
+
+
+  /**
+   * 특정회원의 followings(followers, followings) 정보 조회
+   * @param memberId
+   * @param followingType
+   * @param lastViewDtoNum
+   * @return
+   */
+  @GetMapping("/{memberId}/followings")
+  public ResponseEntity<Slice<FollowingDto>> getFollowings(
+      @PathVariable Long memberId,
+      @RequestParam(name = "tab") FollowingType followingType,
+      @RequestParam(name = "lastViewDtoNum", required = false) Long lastViewDtoNum // 처음 접근시엔 null 이어야함
+  ) {
+    log.info("왜 컨트롤러에 못 들어올까");
+    return ResponseEntity.ok(memberService.getFollowings(memberId, followingType, lastViewDtoNum));
+  }
+
+
 }

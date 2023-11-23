@@ -5,11 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface FollowingRepository extends JpaRepository<Following, Long> {
+public interface FollowingRepository extends JpaRepository<Following, Long> , FollowingRepositoryCustom{
 
 //  Optional<Follow> findByMember_MemberIdAndFollowing_MemberId(long followerId, long followingId);
 
   boolean existsByFollower_IdAndFollowee_Id(long followerId, long followeeId);
 
-  void deleteByByFollower_IdAndFollowee_Id(long memberId, long followingId);
+  void deleteByFollower_IdAndFollowee_Id(long memberId, long followingId);
 }

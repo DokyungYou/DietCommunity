@@ -10,14 +10,18 @@ import com.example.dietcommunity.member.entity.Member;
 import com.example.dietcommunity.member.entity.MemberAuthToken;
 import com.example.dietcommunity.member.model.request.LoginGeneralRequest;
 import com.example.dietcommunity.member.model.request.SignUpGeneralRequest;
+import com.example.dietcommunity.member.model.response.FollowingDto;
 import com.example.dietcommunity.member.repository.FollowingRepository;
 import com.example.dietcommunity.member.repository.MemberRepository;
 import com.example.dietcommunity.member.repository.MemberTokenRedisRepository;
+import com.example.dietcommunity.member.type.FollowingType;
 import com.example.dietcommunity.member.type.MemberRole;
 import com.example.dietcommunity.member.type.MemberStatus;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -194,10 +198,16 @@ public class MemberService {
   }
 
   @Transactional
-  public void removeFollow(MemberDetails memberDetails, long followeeId){
+  public void removeFollowing(MemberDetails memberDetails, long followeeId){
 
-    followingRepository.deleteByByFollower_IdAndFollowee_Id(memberDetails.getMemberId(), followeeId);
+    followingRepository.deleteByFollower_IdAndFollowee_Id(memberDetails.getMemberId(), followeeId);
 
+  }
+
+  // memberId, 닉네임
+  public Slice<FollowingDto> getFollowings(Long memberId, FollowingType followingType ,Long lastViewDtoNum) {
+
+    return followingRepository.getFollowings(memberId, followingType ,lastViewDtoNum,Pageable.ofSize(20));
   }
 }
 
