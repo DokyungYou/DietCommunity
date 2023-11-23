@@ -45,7 +45,7 @@ public class MemberDetails implements UserDetails {
 
   public static MemberDetails fromMember(Member member) {
     return MemberDetails.builder()
-        .memberId(member.getMemberId())
+        .memberId(member.getId())
         .email(member.getEmail())
         .accountId(member.getAccountId())
         .nickname(member.getNickname())
@@ -61,7 +61,7 @@ public class MemberDetails implements UserDetails {
 
   public Member toMember() {
     return Member.builder()
-        .memberId(this.getMemberId())
+        .id(this.getMemberId())
         .email(this.getEmail())
         .accountId(this.getAccountId())
         .nickname(this.getNickname())

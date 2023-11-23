@@ -5,18 +5,16 @@ import com.example.dietcommunity.common.exception.MemberException;
 import com.example.dietcommunity.common.exception.SecurityExceptionCustom;
 import com.example.dietcommunity.common.security.JwtTokenProvider;
 import com.example.dietcommunity.common.security.MemberDetails;
-import com.example.dietcommunity.member.entity.Follow;
+import com.example.dietcommunity.member.entity.Following;
 import com.example.dietcommunity.member.entity.Member;
 import com.example.dietcommunity.member.entity.MemberAuthToken;
 import com.example.dietcommunity.member.model.request.LoginGeneralRequest;
 import com.example.dietcommunity.member.model.request.SignUpGeneralRequest;
-import com.example.dietcommunity.member.repository.FollowRepository;
+import com.example.dietcommunity.member.repository.FollowingRepository;
 import com.example.dietcommunity.member.repository.MemberRepository;
 import com.example.dietcommunity.member.repository.MemberTokenRedisRepository;
 import com.example.dietcommunity.member.type.MemberRole;
 import com.example.dietcommunity.member.type.MemberStatus;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +32,7 @@ public class MemberService {
   private final MemberRepository memberRepository;
   private final JwtTokenProvider jwtTokenProvider;
   private final MemberTokenRedisRepository memberTokenRedisRepository;
-  private final FollowRepository followRepository;
+  private final FollowingRepository followingRepository;
 
 
   /**
@@ -173,13 +171,13 @@ public class MemberService {
 //  }
 
   @Transactional
-  public void addFollowingMember(MemberDetails memberDetails, long followingId) {
+  public void followMember(MemberDetails memberDetails, long followeeId) {
 
-    if(followRepository.existsByMember_MemberIdAndFollowing_MemberId(memberDetails.getMemberId(), followingId)){
+    if(followingRepository.existsByFollower_IdAndFollowee_Id(memberDetails.getMemberId(), followeeId)){
       throw new MemberException(ErrorCode.ALREADY_FOLLOWING_MEMBER);
     }
 
-    Member followingMember = memberRepository.findById(followingId)
+    Member followingMember = memberRepository.findById(followeeId)
         .orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_MEMBER));
 
     if (followingMember.getStatus() != MemberStatus.ACTIVATED) {
@@ -187,18 +185,18 @@ public class MemberService {
     }
 
 
-    followRepository.save(
-        Follow.builder()
-        .member(memberDetails.toMember())
-        .following(followingMember)
+    followingRepository.save(
+        Following.builder()
+        .follower(memberDetails.toMember())
+        .followee(followingMember)
         .build());
 
   }
 
   @Transactional
-  public void removeFollowing(MemberDetails memberDetails, long followingId){
+  public void removeFollow(MemberDetails memberDetails, long followeeId){
 
-    followRepository.deleteByMember_MemberIdAndFollowing_MemberId(memberDetails.getMemberId(), followingId);
+    followingRepository.deleteByByFollower_IdAndFollowee_Id(memberDetails.getMemberId(), followeeId);
 
   }
 }

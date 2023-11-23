@@ -138,29 +138,29 @@ public class MemberController {
   public ResponseEntity<WithdrawResponse> withdrawMember(@AuthenticationPrincipal MemberDetails memberDetails) {
 
     Member member = memberService.withdrawMember(memberDetails);
-    log.info("사용자가 회원탈퇴했습니다. memberId: {}", member.getMemberId());
+    log.info("사용자가 회원탈퇴했습니다. memberId: {}", member.getId());
 
     return ResponseEntity.ok(new WithdrawResponse(member));
 
   }
 
 
-  @PostMapping("/{memberId}/follow")
+  @PostMapping("/{memberId}/followings")
   public ResponseEntity<Void> followMember(
       @PathVariable long memberId,
       @AuthenticationPrincipal MemberDetails memberDetails){
 
-    memberService.addFollowingMember(memberDetails, memberId);
+    memberService.followMember(memberDetails, memberId);
     return ResponseEntity.ok().build();
   }
 
 
-  @DeleteMapping("/{memberId}/follow")
+  @DeleteMapping("/{memberId}/followings")
   public ResponseEntity<Void> removeFollowing(
       @PathVariable long memberId,
       @AuthenticationPrincipal MemberDetails memberDetails){
 
-    memberService.removeFollowing(memberDetails, memberId);
+    memberService.removeFollow(memberDetails, memberId);
     return ResponseEntity.ok().build();
   }
 }
