@@ -35,8 +35,8 @@ public enum ErrorCode {
   NOT_FOUND_MEMBER(404,"해당 사용자를 찾을 수 없습니다."),
   ALREADY_AUTHENTICATED_MEMBER(409,"이미 인증을 완료한 사용자입니다."), // 현 상태와 요청의 충돌
   NOT_CORRECT_ACCOUNT_ID_OR_PASSWORD(401,"아이디 또는 비밀번호를 잘못 입력했습니다."),
-  UNABLE_LOGIN_UNAUTHENTICATED_MEMBER(403,"계정인증을 완료한 계정만 로그인 할 수 있습니다.")
-
+  UNABLE_LOGIN_UNAUTHENTICATED_MEMBER(403,"계정인증을 완료한 계정만 로그인 할 수 있습니다."),
+  ALREADY_FOLLOWING_MEMBER(409,"이미 팔로잉한 회원입니다.")
   ;
 
 

@@ -5,14 +5,18 @@ import com.example.dietcommunity.common.exception.MemberException;
 import com.example.dietcommunity.common.exception.SecurityExceptionCustom;
 import com.example.dietcommunity.common.security.JwtTokenProvider;
 import com.example.dietcommunity.common.security.MemberDetails;
+import com.example.dietcommunity.member.entity.Follow;
 import com.example.dietcommunity.member.entity.Member;
 import com.example.dietcommunity.member.entity.MemberAuthToken;
 import com.example.dietcommunity.member.model.request.LoginGeneralRequest;
 import com.example.dietcommunity.member.model.request.SignUpGeneralRequest;
+import com.example.dietcommunity.member.repository.FollowRepository;
 import com.example.dietcommunity.member.repository.MemberRepository;
 import com.example.dietcommunity.member.repository.MemberTokenRedisRepository;
 import com.example.dietcommunity.member.type.MemberRole;
 import com.example.dietcommunity.member.type.MemberStatus;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +34,7 @@ public class MemberService {
   private final MemberRepository memberRepository;
   private final JwtTokenProvider jwtTokenProvider;
   private final MemberTokenRedisRepository memberTokenRedisRepository;
+  private final FollowRepository followRepository;
 
 
   /**
@@ -65,7 +70,9 @@ public class MemberService {
   }
 
 
-  /** 계정인증메일 재전송 가능여부검증
+  /**
+   * 계정인증메일 재전송 가능여부검증
+   *
    * @param email
    */
   public void validateResendAuthMemberEmail(String email) {
@@ -158,6 +165,41 @@ public class MemberService {
     member.withdrawMember();
 
     return memberRepository.save(member);
+  }
+
+//  public Member getMemberProfile(long memberId) {
+//    return memberRepository.findById(memberId)
+//        .orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_MEMBER));
+//  }
+
+  @Transactional
+  public void addFollowingMember(MemberDetails memberDetails, long followingId) {
+
+    if(followRepository.existsByMember_MemberIdAndFollowing_MemberId(memberDetails.getMemberId(), followingId)){
+      throw new MemberException(ErrorCode.ALREADY_FOLLOWING_MEMBER);
+    }
+
+    Member followingMember = memberRepository.findById(followingId)
+        .orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_MEMBER));
+
+    if (followingMember.getStatus() != MemberStatus.ACTIVATED) {
+      throw new MemberException(ErrorCode.NOT_FOUND_MEMBER);
+    }
+
+
+    followRepository.save(
+        Follow.builder()
+        .member(memberDetails.toMember())
+        .following(followingMember)
+        .build());
+
+  }
+
+  @Transactional
+  public void removeFollowing(MemberDetails memberDetails, long followingId){
+
+    followRepository.deleteByMember_MemberIdAndFollowing_MemberId(memberDetails.getMemberId(), followingId);
+
   }
 }
 

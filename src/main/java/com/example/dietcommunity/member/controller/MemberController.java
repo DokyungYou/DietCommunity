@@ -20,6 +20,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -143,4 +144,23 @@ public class MemberController {
 
   }
 
+
+  @PostMapping("/{memberId}/follow")
+  public ResponseEntity<Void> followMember(
+      @PathVariable long memberId,
+      @AuthenticationPrincipal MemberDetails memberDetails){
+
+    memberService.addFollowingMember(memberDetails, memberId);
+    return ResponseEntity.ok().build();
+  }
+
+
+  @DeleteMapping("/{memberId}/follow")
+  public ResponseEntity<Void> removeFollowing(
+      @PathVariable long memberId,
+      @AuthenticationPrincipal MemberDetails memberDetails){
+
+    memberService.removeFollowing(memberDetails, memberId);
+    return ResponseEntity.ok().build();
+  }
 }
