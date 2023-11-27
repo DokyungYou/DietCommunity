@@ -20,8 +20,8 @@ import com.example.dietcommunity.member.type.MemberStatus;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -169,10 +169,6 @@ public class MemberService {
     return memberRepository.save(member);
   }
 
-//  public Member getMemberProfile(long memberId) {
-//    return memberRepository.findById(memberId)
-//        .orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_MEMBER));
-//  }
 
   @Transactional
   public void followMember(MemberDetails memberDetails, long followeeId) {
@@ -205,9 +201,9 @@ public class MemberService {
   }
 
   // memberId, 닉네임
-  public Slice<FollowingDto> getFollowings(Long memberId, FollowingType followingType ,Long lastViewDtoNum) {
+  public Page<FollowingDto> getFollowings(Long memberId, FollowingType followingType ,Pageable pageable) {
 
-    return followingRepository.getFollowings(memberId, followingType ,lastViewDtoNum,Pageable.ofSize(20));
+    return followingRepository.getFollowings(memberId, followingType ,pageable);
   }
 }
 

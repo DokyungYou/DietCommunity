@@ -9,6 +9,8 @@ public enum ErrorCode {
 
   // common
   INVALID_INPUT_VALUE(400,"유효하지 않은 입력값이 있습니다."),
+  ILLEGAL_ARGUMENT_EXCEPTION( 400, "IllegalArgumentException 이 발생하였습니다."),
+  NULL_POINTER_EXCEPTION(500, "NullPointerException 이 발생하였습니다."),
 
 
   // SecurityException

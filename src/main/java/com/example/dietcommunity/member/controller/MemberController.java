@@ -17,7 +17,10 @@ import java.util.UUID;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -173,17 +176,16 @@ public class MemberController {
    * 특정회원의 followings(followers, followings) 정보 조회
    * @param memberId
    * @param followingType
-   * @param lastViewDtoNum
+   * @param
    * @return
    */
   @GetMapping("/{memberId}/followings")
-  public ResponseEntity<Slice<FollowingDto>> getFollowings(
+  public ResponseEntity<Page<FollowingDto>> getFollowings(
       @PathVariable Long memberId,
       @RequestParam(name = "tab") FollowingType followingType,
-      @RequestParam(name = "lastViewDtoNum", required = false) Long lastViewDtoNum // 처음 접근시엔 null 이어야함
+      @PageableDefault(size = 20 , page = 0, sort = "followingId", direction = Direction.DESC) Pageable pageable
   ) {
-    log.info("왜 컨트롤러에 못 들어올까");
-    return ResponseEntity.ok(memberService.getFollowings(memberId, followingType, lastViewDtoNum));
+    return ResponseEntity.ok(memberService.getFollowings(memberId, followingType, pageable));
   }
 
 
