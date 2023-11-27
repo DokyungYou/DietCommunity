@@ -7,19 +7,26 @@ import com.example.dietcommunity.member.entity.Member;
 import com.example.dietcommunity.member.model.request.FindPasswordRequest;
 import com.example.dietcommunity.member.model.request.LoginGeneralRequest;
 import com.example.dietcommunity.member.model.request.SignUpGeneralRequest;
+import com.example.dietcommunity.member.model.response.FollowingDto;
 import com.example.dietcommunity.member.model.response.LoginGeneralResponse;
 import com.example.dietcommunity.member.model.response.SignUpGeneralResponse;
 import com.example.dietcommunity.member.model.response.WithdrawResponse;
 import com.example.dietcommunity.member.service.MemberService;
+import com.example.dietcommunity.member.type.FollowingType;
 import java.util.UUID;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -137,10 +144,49 @@ public class MemberController {
   public ResponseEntity<WithdrawResponse> withdrawMember(@AuthenticationPrincipal MemberDetails memberDetails) {
 
     Member member = memberService.withdrawMember(memberDetails);
-    log.info("사용자가 회원탈퇴했습니다. memberId: {}", member.getMemberId());
+    log.info("사용자가 회원탈퇴했습니다. memberId: {}", member.getId());
 
     return ResponseEntity.ok(new WithdrawResponse(member));
 
   }
+
+
+  @PostMapping("/{memberId}/followings")
+  public ResponseEntity<Void> followMember(
+      @PathVariable long memberId,
+      @AuthenticationPrincipal MemberDetails memberDetails){
+
+    memberService.followMember(memberDetails, memberId);
+    return ResponseEntity.ok().build();
+  }
+
+
+  @DeleteMapping("/{memberId}/followings")
+  public ResponseEntity<Void> removeFollowing(
+      @PathVariable long memberId,
+      @AuthenticationPrincipal MemberDetails memberDetails){
+
+    memberService.removeFollowing(memberDetails, memberId);
+    return ResponseEntity.ok().build();
+  }
+
+
+
+  /**
+   * 특정회원의 followings(followers, followings) 정보 조회
+   * @param memberId
+   * @param followingType
+   * @param
+   * @return
+   */
+  @GetMapping("/{memberId}/followings")
+  public ResponseEntity<Page<FollowingDto>> getFollowings(
+      @PathVariable Long memberId,
+      @RequestParam(name = "tab") FollowingType followingType,
+      @PageableDefault(size = 20 , page = 0, sort = "followingId", direction = Direction.DESC) Pageable pageable
+  ) {
+    return ResponseEntity.ok(memberService.getFollowings(memberId, followingType, pageable));
+  }
+
 
 }

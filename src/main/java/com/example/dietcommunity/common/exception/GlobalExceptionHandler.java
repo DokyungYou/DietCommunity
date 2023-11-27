@@ -12,13 +12,21 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
 
-  // filter 내에서 발생한 SecurityExceptionCustom 처리하는데 사용되는 핸들러 X
-  @ExceptionHandler(SecurityExceptionCustom.class)
-  public ResponseEntity<ErrorResponse> handleSecurityExceptionCustom(SecurityExceptionCustom e) {
+  @ExceptionHandler(NullPointerException.class)
+  public ResponseEntity<ErrorResponse> handleNullPointerException(NullPointerException e) {
 
-    log.error("errorCode: {}", e.getErrorCode());
-    return ResponseEntity.status(e.getErrorCode().getHttpStatus())
-        .body(new ErrorResponse(e.getErrorCode()));
+    log.error("errorCode: {} , errorMessage: {}", ErrorCode.NULL_POINTER_EXCEPTION, e.getMessage());
+    return ResponseEntity.status(500)
+        .body(new ErrorResponse(ErrorCode.NULL_POINTER_EXCEPTION));
+
+  }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+
+    log.error("errorCode: {} , errorMessage: {}", ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION, e.getMessage());
+    return ResponseEntity.status(400)
+        .body(new ErrorResponse( ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION));
 
   }
 
@@ -31,6 +39,19 @@ public class GlobalExceptionHandler {
         .body(new ErrorResponse(ErrorCode.INVALID_INPUT_VALUE, e.getBindingResult()));
 
   }
+
+
+
+  // filter 내에서 발생한 SecurityExceptionCustom 처리하는데 사용되는 핸들러 X
+  @ExceptionHandler(SecurityExceptionCustom.class)
+  public ResponseEntity<ErrorResponse> handleSecurityExceptionCustom(SecurityExceptionCustom e) {
+
+    log.error("errorCode: {}", e.getErrorCode());
+    return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+        .body(new ErrorResponse(e.getErrorCode()));
+
+  }
+
 
   @ExceptionHandler(MemberException.class)
   public ResponseEntity<ErrorResponse> handleMemberException(MemberException e) {

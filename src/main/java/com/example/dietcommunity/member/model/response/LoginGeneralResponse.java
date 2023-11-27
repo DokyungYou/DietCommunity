@@ -28,7 +28,7 @@ public class LoginGeneralResponse {
     MemberAuthToken memberAuthToken = loginResponse.getSecond();
 
     return LoginGeneralResponse.builder()
-        .memberId(member.getMemberId())
+        .memberId(member.getId())
         .nickname(member.getNickname())
         .accessToken(memberAuthToken.getAccessToken())
         .refreshToken(memberAuthToken.getRefreshToken())

@@ -15,7 +15,7 @@ public class WithdrawResponse {
   private LocalDateTime withdrawAt;
 
   public WithdrawResponse(Member member){
-    this.memberId = member.getMemberId();
+    this.memberId = member.getId();
     this.memberStatus = member.getStatus();
     this.withdrawAt = member.getModifiedAt();
   }

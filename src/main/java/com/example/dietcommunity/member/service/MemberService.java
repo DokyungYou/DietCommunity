@@ -5,17 +5,23 @@ import com.example.dietcommunity.common.exception.MemberException;
 import com.example.dietcommunity.common.exception.SecurityExceptionCustom;
 import com.example.dietcommunity.common.security.JwtTokenProvider;
 import com.example.dietcommunity.common.security.MemberDetails;
+import com.example.dietcommunity.member.entity.Following;
 import com.example.dietcommunity.member.entity.Member;
 import com.example.dietcommunity.member.entity.MemberAuthToken;
 import com.example.dietcommunity.member.model.request.LoginGeneralRequest;
 import com.example.dietcommunity.member.model.request.SignUpGeneralRequest;
+import com.example.dietcommunity.member.model.response.FollowingDto;
+import com.example.dietcommunity.member.repository.FollowingRepository;
 import com.example.dietcommunity.member.repository.MemberRepository;
 import com.example.dietcommunity.member.repository.MemberTokenRedisRepository;
+import com.example.dietcommunity.member.type.FollowingType;
 import com.example.dietcommunity.member.type.MemberRole;
 import com.example.dietcommunity.member.type.MemberStatus;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,6 +36,7 @@ public class MemberService {
   private final MemberRepository memberRepository;
   private final JwtTokenProvider jwtTokenProvider;
   private final MemberTokenRedisRepository memberTokenRedisRepository;
+  private final FollowingRepository followingRepository;
 
 
   /**
@@ -65,7 +72,9 @@ public class MemberService {
   }
 
 
-  /** 계정인증메일 재전송 가능여부검증
+  /**
+   * 계정인증메일 재전송 가능여부검증
+   *
    * @param email
    */
   public void validateResendAuthMemberEmail(String email) {
@@ -158,6 +167,40 @@ public class MemberService {
     member.withdrawMember();
 
     return memberRepository.save(member);
+  }
+
+
+  @Transactional
+  public void followMember(MemberDetails memberDetails, long followeeId) {
+
+    if(followingRepository.existsByFollower_IdAndFollowee_Id(memberDetails.getMemberId(), followeeId)){
+      throw new MemberException(ErrorCode.ALREADY_FOLLOWING_MEMBER);
+    }
+
+
+    Member followingMember = memberRepository.findByIdAndStatus(followeeId, MemberStatus.ACTIVATED)
+        .orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_MEMBER));
+
+
+    followingRepository.save(
+        Following.builder()
+        .follower(memberDetails.toMember())
+        .followee(followingMember)
+        .build());
+
+  }
+
+  @Transactional
+  public void removeFollowing(MemberDetails memberDetails, long followeeId){
+
+    followingRepository.deleteByFollower_IdAndFollowee_Id(memberDetails.getMemberId(), followeeId);
+
+  }
+
+  // memberId, 닉네임
+  public Page<FollowingDto> getFollowings(Long memberId, FollowingType followingType ,Pageable pageable) {
+
+    return followingRepository.getFollowings(memberId, followingType ,pageable);
   }
 }
 
