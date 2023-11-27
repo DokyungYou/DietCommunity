@@ -1,6 +1,7 @@
 package com.example.dietcommunity.member.repository;
 
 import com.example.dietcommunity.member.entity.Member;
+import com.example.dietcommunity.member.type.MemberStatus;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -17,4 +18,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
   Optional<Member> findByAccountId(String accountId);
 
   Optional<Member> findByEmailAndAccountId(String email, String accountId);
+
+  Optional<Member> findByIdAndStatus(long memberId, MemberStatus memberStatus);
 }

@@ -177,12 +177,9 @@ public class MemberService {
       throw new MemberException(ErrorCode.ALREADY_FOLLOWING_MEMBER);
     }
 
-    Member followingMember = memberRepository.findById(followeeId)
-        .orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_MEMBER));
 
-    if (followingMember.getStatus() != MemberStatus.ACTIVATED) {
-      throw new MemberException(ErrorCode.NOT_FOUND_MEMBER);
-    }
+    Member followingMember = memberRepository.findByIdAndStatus(followeeId, MemberStatus.ACTIVATED)
+        .orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_MEMBER));
 
 
     followingRepository.save(
