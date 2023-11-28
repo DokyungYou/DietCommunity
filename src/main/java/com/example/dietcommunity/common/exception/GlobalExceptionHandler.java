@@ -53,6 +53,15 @@ public class GlobalExceptionHandler {
   }
 
 
+  @ExceptionHandler(PostException.class)
+  public ResponseEntity<ErrorResponse> handlePostException(PostException e) {
+
+    log.error("errorCode: {}", e.getErrorCode());
+    return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+        .body(new ErrorResponse(e.getErrorCode()));
+
+  }
+
   @ExceptionHandler(MemberException.class)
   public ResponseEntity<ErrorResponse> handleMemberException(MemberException e) {
 

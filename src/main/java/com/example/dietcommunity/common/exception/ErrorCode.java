@@ -28,6 +28,11 @@ public enum ErrorCode {
   INVALID_AUTH_CODE(400,"인증코드가 일치하지않거나 만료되었습니다."),
 
 
+  // PostException
+  NON_EXISTENT_CATEGORY(404, "존재하지 않는 카테고리입니다."),
+  INVALID_CATEGORY_REQUEST(400, "잘못된 카테고리 요청입니다."),
+  ONLY_ALLOW_IMAGE_FILE(400, "이미지 형식의 파일만 저장할 수 있습니다."),
+
 
 
   // MemberException
