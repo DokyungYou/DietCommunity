@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
 
     log.error("errorCode: {} , errorMessage: {}", ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION, e.getMessage());
     return ResponseEntity.status(400)
-        .body(new ErrorResponse( ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION));
+        .body(new ErrorResponse( ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION, e.getMessage()));
 
   }
 
