@@ -7,13 +7,12 @@ import com.example.dietcommunity.common.security.MemberDetails;
 import com.example.dietcommunity.post.entity.Category;
 import com.example.dietcommunity.post.entity.Post;
 import com.example.dietcommunity.post.entity.PostImage;
-import com.example.dietcommunity.post.model.CreatePostDto;
+import com.example.dietcommunity.post.model.PostWriteDto;
 import com.example.dietcommunity.post.repository.CategoryRepository;
 import com.example.dietcommunity.post.repository.PostImageRepository;
 import com.example.dietcommunity.post.repository.PostRepository;
 import com.example.dietcommunity.post.type.CategoryType;
 import com.example.dietcommunity.post.type.PostStatus;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -32,17 +31,13 @@ public class PostService {
 
 
   @Transactional
-  public CreatePostDto.Response createPost(MemberDetails memberDetails,
-      CreatePostDto.Request request, List<MultipartFile> images) {
+  public PostWriteDto.Response createPost(MemberDetails memberDetails,
+      PostWriteDto.Request request, List<MultipartFile> images) {
 
-    // 존재하는 카테고리인지 검증
-    Category category = categoryRepository.findById(request.getCategoryId())
-        .orElseThrow(() -> new PostException(ErrorCode.NON_EXISTENT_CATEGORY));
+    // 요청에 부합하는 카테고리인지 확인
+    Category category = categoryRepository.findByIdAndAndCategoryType(request.getCategoryId(), CategoryType.GENERAL)
+        .orElseThrow(() -> new PostException(ErrorCode.INVALID_CATEGORY_REQUEST));
 
-    // 일반게시글용 카테고리인지 검사
-    if (category.getCategoryType() != CategoryType.GENERAL) {
-      throw new PostException(ErrorCode.INVALID_CATEGORY_REQUEST);
-    }
 
     // 게시글 저장
     Post savedPost = postRepository.save(
@@ -56,17 +51,61 @@ public class PostService {
             .totalLikes(0)
             .build());
 
-    
-    // 위의 조건을 다 만족하면 s3에 이미지 저장하고 db에 저장할 이미지url를 받아온 후 db에 저장
+
+    List<PostImage> postImages = savePostImages(images, savedPost);
+
+    return PostWriteDto.Response.of(savedPost, postImages);
+  }
+
+
+  @Transactional
+  public PostWriteDto.Response updatePost(MemberDetails memberDetails, long postId,
+      PostWriteDto.Request request, List<MultipartFile> images) {
+
+    // 요청에 부합하는 카테고리인지 확인
+    Category category = categoryRepository.findByIdAndAndCategoryType(request.getCategoryId(), CategoryType.GENERAL)
+        .orElseThrow(() -> new PostException(ErrorCode.INVALID_CATEGORY_REQUEST));
+
+
+    Post post = postRepository.findByIdAndPostStatusNot(postId, PostStatus.DELETED)
+        .orElseThrow(() -> new PostException(ErrorCode.NOT_FOUND_POST));
+
+    // 자신이 작성하지 않은 게시글은 수정불가
+    if(!memberDetails.getMemberId().equals(post.getMember().getId())){
+      throw new PostException(ErrorCode.CANNOT_EDIT_OTHERS_POST);
+    }
+
+
+    // post 업데이트
+    post.updatePost(request, category);
+    Post updatedPost = postRepository.save(post);
+
+
+    // s3에 저장했었던 이미지 삭제 후 db에 있는 이미지 삭제
+    List<PostImage> existingImages = postImageRepository.findByPost_Id(postId);
+
+    s3ImageService.deleteAllImages(existingImages);
+    postImageRepository.deleteAll(existingImages);
+
+
+    // 새로운 이미지 저장
+    List<PostImage> postImages = savePostImages(images, updatedPost);
+
+
+    return PostWriteDto.Response.of(updatedPost, postImages);
+  }
+
+  private List<PostImage> savePostImages(List<MultipartFile> images, Post savedPost) {
+
     List<PostImage> postImages = postImageRepository.saveAll(
-        s3ImageService.upload(images)
+        s3ImageService.uploadImages(images, savedPost.getId()) // s3에 저장하고 생성된 url를 반환받음
             .stream()
-            .map(imageUrl -> PostImage.builder()
+            .map(imageUrl -> PostImage.builder()  // url 로 PostImage 엔티티 생성
                 .post(savedPost)
                 .imageUrl(imageUrl)
                 .build())
             .collect(Collectors.toList()));
-
-    return CreatePostDto.Response.of(savedPost, postImages);
+    return postImages;
   }
+
 }

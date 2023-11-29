@@ -16,7 +16,7 @@ import lombok.Setter;
 
 
 @NoArgsConstructor
-public class CreatePostDto {
+public class PostWriteDto {
 
 
   @Getter

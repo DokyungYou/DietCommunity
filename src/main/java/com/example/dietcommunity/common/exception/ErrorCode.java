@@ -31,7 +31,9 @@ public enum ErrorCode {
   // PostException
   NON_EXISTENT_CATEGORY(404, "존재하지 않는 카테고리입니다."),
   INVALID_CATEGORY_REQUEST(400, "잘못된 카테고리 요청입니다."),
-  ONLY_ALLOW_IMAGE_FILE(400, "이미지 형식의 파일만 저장할 수 있습니다."),
+//  UNSUPPORTED_FILE_FORMAT(400, "지원되지 않는 형식의 파일입니다."),
+  NOT_FOUND_POST(404, "존재하지 않는 게시글입니다."),
+  CANNOT_EDIT_OTHERS_POST(400, "다른 사용자의 게시물을 편집 또는 삭제할 수 없습니다."),
 
 
 

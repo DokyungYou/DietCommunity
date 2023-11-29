@@ -1,6 +1,7 @@
 package com.example.dietcommunity.post.entity;
 
 import com.example.dietcommunity.member.entity.Member;
+import com.example.dietcommunity.post.model.PostWriteDto;
 import com.example.dietcommunity.post.type.PostStatus;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -52,4 +53,11 @@ public class Post {
 
   @LastModifiedDate
   private LocalDateTime modifiedAt;
+
+
+  public void updatePost(PostWriteDto.Request request, Category category){
+    this.category = category;
+    this.title = request.getTitle();
+    this.contents = request.getContents();
+  }
 }
