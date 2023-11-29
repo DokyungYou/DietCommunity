@@ -35,6 +35,8 @@ public enum ErrorCode {
   NOT_FOUND_POST(404, "존재하지 않는 게시글입니다."),
   CANNOT_EDIT_OTHERS_POST(400, "다른 사용자의 게시물을 편집 또는 삭제할 수 없습니다."),
 
+  CANNOT_EDIT_CHALLENGE_PASSED_START_DATE(400, "이미 시작날짜가 지난 챌린지는 수정이 불가합니다." ),
+
 
 
   // MemberException

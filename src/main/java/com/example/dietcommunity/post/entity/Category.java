@@ -27,4 +27,9 @@ public class Category {
   private CategoryType categoryType;
 
   private String categoryName;
+
+  public Category updateName(String categoryName){
+    this.categoryName = categoryName;
+    return this;
+  }
 }

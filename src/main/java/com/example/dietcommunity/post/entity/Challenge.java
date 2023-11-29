@@ -1,5 +1,6 @@
 package com.example.dietcommunity.post.entity;
 
+import com.example.dietcommunity.post.model.ChallengeWriteDto;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,5 +37,16 @@ public class Challenge {
   private int limitApplicantsNumber;
 
   private long participateChannelId;
+
+
+  public Challenge updateChallenge(ChallengeWriteDto.Request request, Post updatedPost){
+
+    this.post = updatedPost;
+    this.challengeStartDate = request.getStartDate();
+    this.challengeEndDate = request.getEndDate();
+    this.limitApplicantsNumber = request.getLimitApplicantsNumber();
+
+    return this;
+  }
 
 }

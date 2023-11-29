@@ -61,4 +61,17 @@ public class PostController {
   }
 
 
+  @PutMapping("/challenge/{challengeId}")
+  public ResponseEntity<ChallengeWriteDto.Response> updatePostChallenge(
+      @AuthenticationPrincipal MemberDetails memberDetails,
+      @PathVariable long challengeId,
+      @Valid @RequestPart ChallengeWriteDto.Request request,
+      @RequestPart(value = "images", required = false) List<MultipartFile> images){
+
+    request.validateInputDate();
+    return ResponseEntity.ok( postService.updatePostChallenge(memberDetails, challengeId, request, images));
+  }
+
+
+
 }

@@ -55,9 +55,11 @@ public class Post {
   private LocalDateTime modifiedAt;
 
 
-  public void updatePost(PostWriteDto.Request request, Category category){
+  public Post updatePost(PostWriteDto.Request request, Category category){
     this.category = category;
     this.title = request.getTitle();
     this.contents = request.getContents();
+
+    return this;
   }
 }

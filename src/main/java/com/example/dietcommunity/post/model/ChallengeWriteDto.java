@@ -24,16 +24,19 @@ public class ChallengeWriteDto {
   @Setter
   @NoArgsConstructor
   @AllArgsConstructor
-  public static class Request{
+  public static class Request {
 
-    @NotNull(message = "카테고리를 선택해주세요.")
-    private long categoryId;
+//    @NotNull(message = "카테고리를 선택해주세요.")
+//    private long categoryId;
+//
+//    @NotBlank(message = "제목을 입력해주세요.")
+//    private String title;
+//
+//    @NotBlank(message = "내용을 입력해주세요.")
+//    private String contents;
 
-    @NotBlank(message = "제목을 입력해주세요.")
-    private String title;
-
-    @NotBlank(message = "내용을 입력해주세요.")
-    private String contents;
+    @NotNull
+    private PostWriteDto.Request postRequest;
 
     @NotNull(message = "시작날짜를 선택해주세요.")
     @Future(message = "시작날짜는 현재날짜 이후여야 합니다.")
@@ -75,7 +78,9 @@ public class ChallengeWriteDto {
     private int limitApplicantsNumber;
     private long participateChannelId;
 
-    public static ChallengeWriteDto.Response of(Post post, List<PostImage> images, Challenge challenge) {
+    public static ChallengeWriteDto.Response of(Challenge challenge, List<PostImage> images) {
+
+      Post post = challenge.getPost();
 
       List<String> imageUrls = images.stream()
           .map(PostImage::getImageUrl)
