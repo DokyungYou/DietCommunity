@@ -2,6 +2,7 @@ package com.example.dietcommunity.post.controller;
 
 
 import com.example.dietcommunity.common.security.MemberDetails;
+import com.example.dietcommunity.post.model.ChallengeWriteDto;
 import com.example.dietcommunity.post.model.PostWriteDto;
 import com.example.dietcommunity.post.service.PostService;
 import java.util.List;
@@ -45,8 +46,18 @@ public class PostController {
       @Valid @RequestPart PostWriteDto.Request request,
       @RequestPart(value = "images", required = false) List<MultipartFile> images){
 
-
     return ResponseEntity.ok( postService.updatePost(memberDetails, postId, request, images));
+  }
+
+
+  @PostMapping("/challenge")
+  public ResponseEntity<ChallengeWriteDto.Response> createPostChallenge(
+      @AuthenticationPrincipal MemberDetails memberDetails,
+      @Valid @RequestPart ChallengeWriteDto.Request request,
+      @RequestPart(value = "images", required = false) List<MultipartFile> images){
+
+    request.validateInputDate();
+    return ResponseEntity.ok( postService.createPostChallenge(memberDetails, request, images));
   }
 
 

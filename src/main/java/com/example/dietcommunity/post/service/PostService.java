@@ -5,10 +5,13 @@ import com.example.dietcommunity.common.exception.PostException;
 import com.example.dietcommunity.common.s3.S3ImageService;
 import com.example.dietcommunity.common.security.MemberDetails;
 import com.example.dietcommunity.post.entity.Category;
+import com.example.dietcommunity.post.entity.Challenge;
 import com.example.dietcommunity.post.entity.Post;
 import com.example.dietcommunity.post.entity.PostImage;
+import com.example.dietcommunity.post.model.ChallengeWriteDto;
 import com.example.dietcommunity.post.model.PostWriteDto;
 import com.example.dietcommunity.post.repository.CategoryRepository;
+import com.example.dietcommunity.post.repository.ChallengeRepository;
 import com.example.dietcommunity.post.repository.PostImageRepository;
 import com.example.dietcommunity.post.repository.PostRepository;
 import com.example.dietcommunity.post.type.CategoryType;
@@ -27,6 +30,7 @@ public class PostService {
   private final PostRepository postRepository;
   private final CategoryRepository categoryRepository;
   private final PostImageRepository postImageRepository;
+  private final ChallengeRepository challengeRepository;
   private final S3ImageService s3ImageService;
 
 
@@ -108,4 +112,46 @@ public class PostService {
     return postImages;
   }
 
+  @Transactional
+  public ChallengeWriteDto.Response createPostChallenge(MemberDetails memberDetails,
+      ChallengeWriteDto.Request request, List<MultipartFile> images) {
+
+    // 요청에 부합하는 카테고리인지 확인
+    Category category = categoryRepository.findByIdAndAndCategoryType(request.getCategoryId(), CategoryType.CHALLENGE)
+        .orElseThrow(() -> new PostException(ErrorCode.INVALID_CATEGORY_REQUEST));
+
+    // 챌린지게시글의 제목, 내용, 이미지 저장
+    Post savedPost = postRepository.save(
+        Post.builder()
+            .category(category)
+            .member(memberDetails.toMember())
+            .title(request.getTitle())
+            .contents(request.getContents())
+            .postStatus(PostStatus.NORMALITY)
+            .totalHits(0)
+            .totalLikes(0)
+            .build());
+
+    List<PostImage> postImages = savePostImages(images, savedPost);
+
+
+    // 챌린지 채널로 사용할 카테고리 생성
+    Category challengeChannel = categoryRepository.save(Category.builder()
+        .categoryType(CategoryType.CHALLENGE_CHANNEL)
+        .categoryName(request.getTitle())
+        .build());
+
+
+    // 챌린지에 대한 내용 저장
+    Challenge savedChallenge = challengeRepository.save(Challenge.builder()
+        .post(savedPost)
+        .challengeStartDate(request.getStartDate())
+        .challengeEndDate(request.getEndDate())
+        .limitApplicantsNumber(request.getLimitApplicantsNumber())
+        .participateChannelId(challengeChannel.getId())
+        .build());
+
+    return ChallengeWriteDto.Response.of(savedPost, postImages, savedChallenge);
+
+  }
 }
