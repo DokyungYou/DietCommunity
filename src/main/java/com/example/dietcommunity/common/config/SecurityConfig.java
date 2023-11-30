@@ -36,6 +36,7 @@ public class SecurityConfig {
         // 회원가입, 로그인, 아이디찾기, 비밀번호 찾기는 모두에게 허용
         .authorizeRequests()
         .antMatchers(HttpMethod.GET,"/**/followings").permitAll()
+        .antMatchers(HttpMethod.GET, "/posts").permitAll()
 
         .antMatchers("/",
             "/members/signup-general",

@@ -9,6 +9,7 @@ import com.example.dietcommunity.post.entity.Challenge;
 import com.example.dietcommunity.post.entity.Post;
 import com.example.dietcommunity.post.entity.PostImage;
 import com.example.dietcommunity.post.model.ChallengeWriteDto;
+import com.example.dietcommunity.post.model.PostDto;
 import com.example.dietcommunity.post.model.PostWriteDto;
 import com.example.dietcommunity.post.repository.CategoryRepository;
 import com.example.dietcommunity.post.repository.ChallengeRepository;
@@ -20,6 +21,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -198,5 +201,16 @@ public class PostService {
 
     return ChallengeWriteDto.Response.of(updatedChallenge, updatedImages);
 
+  }
+
+
+  public Page<PostDto> getPostListGeneral(Long categoryId, Pageable pageable) {
+
+    // 일반게시글타입 카테고리인지 확인해야함
+    if(categoryId != null && !categoryRepository.existsByIdAndCategoryType(categoryId, CategoryType.GENERAL)){
+        throw new PostException(ErrorCode.INVALID_CATEGORY_REQUEST);
+    }
+
+    return postRepository.getPostListGeneral(categoryId, pageable);
   }
 }
