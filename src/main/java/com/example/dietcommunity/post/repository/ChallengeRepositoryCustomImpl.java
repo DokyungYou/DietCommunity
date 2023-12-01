@@ -110,7 +110,7 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
     }
 
     if (postSortType == PostSortType.LIKES) {
-      return qChallenge.post.totalHits.desc();
+      return qChallenge.post.totalLikes.desc();
     }
 
     log.error("유효하지 않은 PostSortType: {}", postSortType.name());
