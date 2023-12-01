@@ -8,6 +8,7 @@ import com.example.dietcommunity.post.entity.Category;
 import com.example.dietcommunity.post.entity.Challenge;
 import com.example.dietcommunity.post.entity.Post;
 import com.example.dietcommunity.post.entity.PostImage;
+import com.example.dietcommunity.post.model.ChallengeDto;
 import com.example.dietcommunity.post.model.ChallengeWriteDto;
 import com.example.dietcommunity.post.model.PostDto;
 import com.example.dietcommunity.post.model.PostWriteDto;
@@ -16,6 +17,8 @@ import com.example.dietcommunity.post.repository.ChallengeRepository;
 import com.example.dietcommunity.post.repository.PostImageRepository;
 import com.example.dietcommunity.post.repository.PostRepository;
 import com.example.dietcommunity.post.type.CategoryType;
+import com.example.dietcommunity.post.type.ChallengeQueryFilter;
+import com.example.dietcommunity.post.type.PostSortType;
 import com.example.dietcommunity.post.type.PostStatus;
 import java.time.LocalDate;
 import java.util.List;
@@ -212,5 +215,17 @@ public class PostService {
     }
 
     return postRepository.getPostListGeneral(categoryId, pageable);
+  }
+
+  public Page<ChallengeDto> getChallengeListGeneral(
+      Long categoryId, ChallengeQueryFilter status, PostSortType postSortType, Pageable pageable) {
+
+    // 챌린지타입 카테고리인지 확인
+    if (categoryId != null && !categoryRepository.existsByIdAndCategoryType(categoryId, CategoryType.CHALLENGE)) {
+      throw new PostException(ErrorCode.INVALID_CATEGORY_REQUEST);
+    }
+
+    return challengeRepository.getChallengeList(categoryId, status, postSortType, pageable);
+
   }
 }

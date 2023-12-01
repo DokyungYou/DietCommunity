@@ -37,6 +37,7 @@ public class SecurityConfig {
         .authorizeRequests()
         .antMatchers(HttpMethod.GET,"/**/followings").permitAll()
         .antMatchers(HttpMethod.GET, "/posts").permitAll()
+        .antMatchers(HttpMethod.GET,"/posts/challenges").permitAll()
 
         .antMatchers("/",
             "/members/signup-general",

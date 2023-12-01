@@ -38,6 +38,7 @@ public class Challenge {
 
   private long participateChannelId;
 
+  private boolean isFilled;
 
   public Challenge updateChallenge(ChallengeWriteDto.Request request, Post updatedPost){
 

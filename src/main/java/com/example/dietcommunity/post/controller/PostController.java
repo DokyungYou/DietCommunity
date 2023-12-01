@@ -2,10 +2,13 @@ package com.example.dietcommunity.post.controller;
 
 
 import com.example.dietcommunity.common.security.MemberDetails;
+import com.example.dietcommunity.post.model.ChallengeDto;
 import com.example.dietcommunity.post.model.ChallengeWriteDto;
 import com.example.dietcommunity.post.model.PostDto;
 import com.example.dietcommunity.post.model.PostWriteDto;
 import com.example.dietcommunity.post.service.PostService;
+import com.example.dietcommunity.post.type.ChallengeQueryFilter;
+import com.example.dietcommunity.post.type.PostSortType;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +60,7 @@ public class PostController {
   }
 
 
-  @PostMapping("/challenge")
+  @PostMapping("/challenges")
   public ResponseEntity<ChallengeWriteDto.Response> createPostChallenge(
       @AuthenticationPrincipal MemberDetails memberDetails,
       @Valid @RequestPart ChallengeWriteDto.Request request,
@@ -68,7 +71,7 @@ public class PostController {
   }
 
 
-  @PutMapping("/challenge/{challengeId}")
+  @PutMapping("/challenges/{challengeId}")
   public ResponseEntity<ChallengeWriteDto.Response> updatePostChallenge(
       @AuthenticationPrincipal MemberDetails memberDetails,
       @PathVariable long challengeId,
@@ -96,6 +99,19 @@ public class PostController {
 
     return ResponseEntity.ok(postService.getPostListGeneral(categoryId, pageable));
   }
+  
+
+
+  @GetMapping("/challenges")
+  public ResponseEntity<Page<ChallengeDto>> getChallengeList(
+      @RequestParam(name = "categoryId", required = false) Long categoryId,
+      @RequestParam(name = "filter", defaultValue = "WHOLE") ChallengeQueryFilter filter,
+      @RequestParam(name = "postSortType", defaultValue = "LATEST") PostSortType postSortType,
+      @PageableDefault(size = 20 , page = 0) Pageable pageable){
+
+    return ResponseEntity.ok(postService.getChallengeListGeneral(categoryId, filter, postSortType, pageable));
+  }
+
   
 
 }
