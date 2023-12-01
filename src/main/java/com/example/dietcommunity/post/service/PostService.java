@@ -207,14 +207,14 @@ public class PostService {
   }
 
 
-  public Page<PostDto> getPostListGeneral(Long categoryId, Pageable pageable) {
+  public Page<PostDto> getPostListGeneral(Long categoryId, PostSortType postSortType,Pageable pageable) {
 
     // 일반게시글타입 카테고리인지 확인해야함
     if(categoryId != null && !categoryRepository.existsByIdAndCategoryType(categoryId, CategoryType.GENERAL)){
         throw new PostException(ErrorCode.INVALID_CATEGORY_REQUEST);
     }
 
-    return postRepository.getPostListGeneral(categoryId, pageable);
+    return postRepository.getPostListGeneral(categoryId, postSortType, pageable);
   }
 
   public Page<ChallengeDto> getChallengeListGeneral(

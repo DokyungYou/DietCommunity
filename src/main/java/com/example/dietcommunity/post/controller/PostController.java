@@ -83,21 +83,14 @@ public class PostController {
   }
 
 
-  /**
-   * 게시글(일반) 일반조회
-   * @param categoryId
-   * @param pageable
-   * @return ResponseEntity<Page<PostDto>>
-   * 카테고리 값이 안들어오면 일반게시글타입의 모든 카테고리에 속한 모든게시글을 최신순으로 가져온다.
-   * 카테고리 값이 들어오면 특정카테고리 내의 모든 게시글을 최신순으로 가져온다.
-   * 게시글 상태가 NORMALITY인 게시글만 가져온다.
-   */
+
   @GetMapping
   public ResponseEntity<Page<PostDto>> getPostList(
       @RequestParam(name = "categoryId", required = false) Long categoryId,
+      @RequestParam(name = "postSortType", defaultValue = "LATEST") PostSortType postSortType,
       @PageableDefault(size = 20 , page = 0, sort = "postId", direction = Direction.DESC) Pageable pageable){
 
-    return ResponseEntity.ok(postService.getPostListGeneral(categoryId, pageable));
+    return ResponseEntity.ok(postService.getPostListGeneral(categoryId, postSortType, pageable));
   }
   
 

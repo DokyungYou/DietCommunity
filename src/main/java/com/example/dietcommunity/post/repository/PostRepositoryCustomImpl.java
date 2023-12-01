@@ -1,10 +1,13 @@
 package com.example.dietcommunity.post.repository;
 
+import com.example.dietcommunity.common.exception.ErrorCode;
 import com.example.dietcommunity.post.entity.Category;
 import com.example.dietcommunity.post.entity.QPost;
 import com.example.dietcommunity.post.model.PostDto;
 import com.example.dietcommunity.post.type.CategoryType;
+import com.example.dietcommunity.post.type.PostSortType;
 import com.example.dietcommunity.post.type.PostStatus;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -26,7 +29,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom{
   private final QPost qPost = QPost.post;
 
   @Override
-  public Page<PostDto> getPostListGeneral(Long categoryId, Pageable pageable) {
+  public Page<PostDto> getPostListGeneral(Long categoryId, PostSortType postSortType, Pageable pageable) {
 
     // 카테고리 조건
     BooleanExpression categoryCondition = createCategoryCondition(categoryId);
@@ -42,7 +45,8 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom{
         )).from(qPost)
         .where(categoryCondition)
         .where(qPost.postStatus.eq(PostStatus.NORMALITY))
-        .orderBy(qPost.id.desc())
+
+        .orderBy(createOrderSpecifier(postSortType))
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
         .fetch();
@@ -62,4 +66,23 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom{
     }
     return qPost.category.id.eq(categoryId);
   }
+
+  private OrderSpecifier<?> createOrderSpecifier(PostSortType postSortType){
+
+    if (postSortType == PostSortType.LATEST || postSortType == null) {
+      return qPost.id.desc();
+    }
+
+    if (postSortType == PostSortType.VIEWS) {
+      return qPost.totalHits.desc();
+    }
+
+    if (postSortType == PostSortType.LIKES) {
+      return qPost.totalLikes.desc();
+    }
+
+    log.error("유효하지 않은 PostSortType: {}", postSortType.name());
+    throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION.getDescription());
+  }
+
 }
