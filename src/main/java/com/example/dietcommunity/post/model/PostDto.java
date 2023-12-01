@@ -17,7 +17,6 @@ import lombok.Setter;
 public class PostDto {
 
   private Long postId;
-  private Category category;
   private String writerNickname;
   private String title;
   private long totalHits;

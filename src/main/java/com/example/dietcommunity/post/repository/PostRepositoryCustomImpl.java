@@ -34,7 +34,6 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom{
 
     List<PostDto> postDtoList = jpaQueryFactory.select(Projections.constructor(PostDto.class,
             qPost.id.as("postId"),
-            qPost.category,
             qPost.member.nickname.as("writerNickname"),
             qPost.title,
             qPost.totalHits,
