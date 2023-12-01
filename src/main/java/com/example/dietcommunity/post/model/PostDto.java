@@ -22,7 +22,7 @@ public class PostDto {
   private String title;
   private long totalHits;
   private long totalLikes;
-  private LocalDateTime registeredAt;
+  private LocalDateTime createdAt;
 
 
 }

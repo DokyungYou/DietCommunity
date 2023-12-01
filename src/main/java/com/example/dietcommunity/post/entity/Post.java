@@ -53,7 +53,7 @@ public class Post {
   private PostStatus postStatus;
 
   @CreatedDate
-  private LocalDateTime registeredAt;
+  private LocalDateTime createdAt;
 
   @LastModifiedDate
   private LocalDateTime modifiedAt;

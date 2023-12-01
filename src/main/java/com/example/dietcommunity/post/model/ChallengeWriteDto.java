@@ -92,7 +92,7 @@ public class ChallengeWriteDto {
           .title(post.getTitle())
           .contents(post.getContents())
           .postStatus(post.getPostStatus())
-          .registeredAt(post.getRegisteredAt())
+          .registeredAt(post.getCreatedAt())
           .imageUrls(imageUrls)
 
           .startDate(challenge.getChallengeStartDate())

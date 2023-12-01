@@ -63,7 +63,7 @@ public class PostWriteDto {
           .title(post.getTitle())
           .contents(post.getContents())
           .postStatus(post.getPostStatus())
-          .registeredAt(post.getRegisteredAt())
+          .registeredAt(post.getCreatedAt())
           .imageUrls(imageUrls)
           .build();
     }

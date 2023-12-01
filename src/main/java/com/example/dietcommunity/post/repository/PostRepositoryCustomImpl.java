@@ -39,7 +39,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom{
             qPost.title,
             qPost.totalHits,
             qPost.totalLikes,
-            qPost.registeredAt
+            qPost.createdAt
         )).from(qPost)
         .where(categoryCondition)
         .where(qPost.postStatus.eq(PostStatus.NORMALITY))
