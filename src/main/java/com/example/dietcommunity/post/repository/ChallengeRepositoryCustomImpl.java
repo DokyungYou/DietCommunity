@@ -1,15 +1,13 @@
 package com.example.dietcommunity.post.repository;
 
 import com.example.dietcommunity.common.exception.ErrorCode;
+import com.example.dietcommunity.post.entity.Challenge;
 import com.example.dietcommunity.post.entity.QChallenge;
-import com.example.dietcommunity.post.model.ChallengeDto;
-import com.example.dietcommunity.post.model.PostDto;
 import com.example.dietcommunity.post.type.CategoryType;
 import com.example.dietcommunity.post.type.ChallengeQueryFilter;
 import com.example.dietcommunity.post.type.PostSortType;
 import com.example.dietcommunity.post.type.PostStatus;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -29,31 +27,13 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
   private final QChallenge qChallenge = QChallenge.challenge;
 
   @Override
-  public Page<ChallengeDto> getChallengeList(Long categoryId, ChallengeQueryFilter status, PostSortType postSortType,
+  public Page<Challenge> getChallengeList(Long categoryId, ChallengeQueryFilter status, PostSortType postSortType,
       Pageable pageable) {
 
     BooleanExpression categoryCondition = createCategoryCondition(categoryId);
 
-    List<ChallengeDto> challengeDtoList
-        = jpaQueryFactory.select(Projections.constructor(ChallengeDto.class,
-                qChallenge.id,
-                qChallenge.challengeStartDate,
-                qChallenge.challengeEndDate,
-                qChallenge.limitApplicantsNumber,
-                qChallenge.participateChannelId,
-                qChallenge.isFilled,
-
-                Projections.fields(PostDto.class,
-                    qChallenge.post.id.as("postId"),
-                    qChallenge.post.member.nickname.as("writerNickname"),
-                    qChallenge.post.title,
-                    qChallenge.post.totalHits,
-                    qChallenge.post.totalLikes,
-                    qChallenge.post.createdAt
-                )
-            )
-        )
-        .from(qChallenge)
+    List<Challenge> challengeList
+        = jpaQueryFactory.selectFrom(qChallenge)
 
         .where(categoryCondition)
         .where(createChallengeStatusCondition(status))
@@ -72,7 +52,7 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
         .where(categoryCondition)
         .where(qChallenge.post.postStatus.eq(PostStatus.NORMALITY));
 
-    return PageableExecutionUtils.getPage(challengeDtoList, pageable, totalCountQuery::fetchOne);
+    return PageableExecutionUtils.getPage(challengeList, pageable, totalCountQuery::fetchOne);
   }
 
 

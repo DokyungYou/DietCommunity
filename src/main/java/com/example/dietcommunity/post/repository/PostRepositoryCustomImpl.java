@@ -1,14 +1,12 @@
 package com.example.dietcommunity.post.repository;
 
 import com.example.dietcommunity.common.exception.ErrorCode;
-import com.example.dietcommunity.post.entity.Category;
+import com.example.dietcommunity.post.entity.Post;
 import com.example.dietcommunity.post.entity.QPost;
-import com.example.dietcommunity.post.model.PostDto;
 import com.example.dietcommunity.post.type.CategoryType;
 import com.example.dietcommunity.post.type.PostSortType;
 import com.example.dietcommunity.post.type.PostStatus;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -29,20 +27,14 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom{
   private final QPost qPost = QPost.post;
 
   @Override
-  public Page<PostDto> getPostListGeneral(Long categoryId, PostSortType postSortType, Pageable pageable) {
+  public Page<Post> getPostListGeneral(Long categoryId, PostSortType postSortType, Pageable pageable) {
 
     // 카테고리 조건
     BooleanExpression categoryCondition = createCategoryCondition(categoryId);
 
 
-    List<PostDto> postDtoList = jpaQueryFactory.select(Projections.constructor(PostDto.class,
-            qPost.id.as("postId"),
-            qPost.member.nickname.as("writerNickname"),
-            qPost.title,
-            qPost.totalHits,
-            qPost.totalLikes,
-            qPost.createdAt
-        )).from(qPost)
+    List<Post> postList = jpaQueryFactory.selectFrom(qPost)
+
         .where(categoryCondition)
         .where(qPost.postStatus.eq(PostStatus.NORMALITY))
 
@@ -57,7 +49,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom{
         .where(categoryCondition)
         .where(qPost.postStatus.eq(PostStatus.NORMALITY));
 
-    return PageableExecutionUtils.getPage(postDtoList, pageable, totalCountQuery::fetchOne);
+    return PageableExecutionUtils.getPage(postList, pageable, totalCountQuery::fetchOne);
   }
 
   private BooleanExpression createCategoryCondition(Long categoryId){

@@ -224,7 +224,7 @@ public class PostService {
         throw new PostException(ErrorCode.INVALID_CATEGORY_REQUEST);
     }
 
-    return postRepository.getPostListGeneral(categoryId, postSortType, pageable);
+    return PostDto.toDtoPage(postRepository.getPostListGeneral(categoryId, postSortType, pageable));
   }
 
   public Page<ChallengeDto> getChallengeListGeneral(
@@ -235,8 +235,7 @@ public class PostService {
       throw new PostException(ErrorCode.INVALID_CATEGORY_REQUEST);
     }
 
-    return challengeRepository.getChallengeList(categoryId, status, postSortType, pageable);
-
+    return ChallengeDto.toDtoPage(challengeRepository.getChallengeList(categoryId, status, postSortType, pageable));
   }
 
 
