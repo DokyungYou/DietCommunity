@@ -40,4 +40,12 @@ public class ErrorResponse {
   }
 
 
+  // 기본제공되는 에러용 ( IllegalArgumentException, NullPointerException 등)
+  public ErrorResponse(ErrorCode errorCode, String errorMessage){
+    this.errorCode = errorCode.name();
+    this.httpStatus = errorCode.getHttpStatus();
+    this.errorMessage = errorMessage;
+  }
+
+
 }

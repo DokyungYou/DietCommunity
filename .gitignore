@@ -18,6 +18,9 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
+application.yml
+# application.yml 설정 전에 푸시해서 계속 적용이 안되는 듯 하다.
+
 .idea
 *.iws
 *.iml

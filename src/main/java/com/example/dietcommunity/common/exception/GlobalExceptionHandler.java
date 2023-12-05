@@ -15,7 +15,12 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(NullPointerException.class)
   public ResponseEntity<ErrorResponse> handleNullPointerException(NullPointerException e) {
 
-    log.error("errorCode: {} , errorMessage: {}", ErrorCode.NULL_POINTER_EXCEPTION, e.getMessage());
+    if (e.getMessage() == null) {
+      log.error("errorCode: {} , stackTrace: {}", ErrorCode.NULL_POINTER_EXCEPTION, e.getStackTrace());
+    } else {
+      log.error("errorCode: {} , errorMessage: {}", ErrorCode.NULL_POINTER_EXCEPTION, e.getMessage());
+    }
+
     return ResponseEntity.status(500)
         .body(new ErrorResponse(ErrorCode.NULL_POINTER_EXCEPTION));
 
@@ -26,7 +31,7 @@ public class GlobalExceptionHandler {
 
     log.error("errorCode: {} , errorMessage: {}", ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION, e.getMessage());
     return ResponseEntity.status(400)
-        .body(new ErrorResponse( ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION));
+        .body(new ErrorResponse( ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION, e.getMessage()));
 
   }
 
@@ -52,6 +57,15 @@ public class GlobalExceptionHandler {
 
   }
 
+
+  @ExceptionHandler(PostException.class)
+  public ResponseEntity<ErrorResponse> handlePostException(PostException e) {
+
+    log.error("errorCode: {}", e.getErrorCode());
+    return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+        .body(new ErrorResponse(e.getErrorCode()));
+
+  }
 
   @ExceptionHandler(MemberException.class)
   public ResponseEntity<ErrorResponse> handleMemberException(MemberException e) {
