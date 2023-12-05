@@ -21,6 +21,7 @@ import com.example.dietcommunity.post.type.ChallengeQueryFilter;
 import com.example.dietcommunity.post.type.PostSortType;
 import com.example.dietcommunity.post.type.PostStatus;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -97,7 +98,16 @@ public class PostService {
   }
 
 
+
   private List<PostImage> savePostImages(List<MultipartFile> images, Post savedPost) {
+
+    if(images == null || images.isEmpty()){
+      return new ArrayList<>();
+    }
+    if (images.size() > 5) {
+      throw new IllegalArgumentException("이미지는 5개까지 저장가능합니다.");
+    }
+
 
     List<PostImage> postImages = postImageRepository.saveAll(
         s3ImageService.uploadImages(images, savedPost.getId()) // s3에 저장하고 생성된 url를 반환받음

@@ -15,7 +15,12 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(NullPointerException.class)
   public ResponseEntity<ErrorResponse> handleNullPointerException(NullPointerException e) {
 
-    log.error("errorCode: {} , errorMessage: {}", ErrorCode.NULL_POINTER_EXCEPTION, e.getMessage());
+    if (e.getMessage() == null) {
+      log.error("errorCode: {} , stackTrace: {}", ErrorCode.NULL_POINTER_EXCEPTION, e.getStackTrace());
+    } else {
+      log.error("errorCode: {} , errorMessage: {}", ErrorCode.NULL_POINTER_EXCEPTION, e.getMessage());
+    }
+
     return ResponseEntity.status(500)
         .body(new ErrorResponse(ErrorCode.NULL_POINTER_EXCEPTION));
 

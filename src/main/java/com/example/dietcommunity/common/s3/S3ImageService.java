@@ -2,11 +2,9 @@ package com.example.dietcommunity.common.s3;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.example.dietcommunity.common.exception.ErrorCode;
-import com.example.dietcommunity.common.exception.PostException;
 import com.example.dietcommunity.post.entity.PostImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,9 +33,6 @@ public class S3ImageService {
   // s3버킷에 저장하면서 생성한 이미지 url 리스트를 반환
   public List<String> uploadImages(List<MultipartFile> multipartFiles, long postId) {
 
-    if (multipartFiles.size() > 5) {
-      throw new IllegalArgumentException("이미지는 5개까지 저장가능합니다.");
-    }
     List<String> imageUrls = new ArrayList<>();
 
     for (MultipartFile file : multipartFiles) {
@@ -45,17 +40,22 @@ public class S3ImageService {
       validateImageFile(file);
       String fileName = createFileName(file, postId);  // s3에 저장되는 파일은 모두 구분되어야하고, 동일한 이름의 파일들이 버킷에 들어갈 수도 있으니 별도의 고유이름으로 만들어줘야함
 
+
       // s3에 저장
       try {
-        amazonS3Client.putObject(
-            new PutObjectRequest(s3BucketName, fileName, file.getInputStream(), getObjectMetadata(file))
-                .withCannedAcl(CannedAccessControlList.PublicRead));
-        log.info("s3버킷에 이미지 저장성공 : {}", fileName);
+        File convertedFile = convertMultipartFileToFile(file, postId);
 
+        amazonS3Client.putObject(
+            new PutObjectRequest(s3BucketName, fileName , convertedFile)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
+
+        log.info("게시글 Id: {} ->  s3버킷에 이미지 저장성공 : {}", postId ,fileName);
         imageUrls.add(amazonS3Client.getUrl(s3BucketName, fileName).toString());
 
+        deleteFile(convertedFile); // 로컬에 저장됐던 파일 삭제
+
       } catch (IOException e) {
-        log.error("이미지 업로드에 실패했습니다.", e);
+        log.error("게시글 Id: {} -> 이미지 업로드에 실패했습니다.", postId, e);
       }
     }
 
@@ -91,12 +91,12 @@ public class S3ImageService {
   }
 
 
-  private ObjectMetadata getObjectMetadata(MultipartFile file) {
-    ObjectMetadata objectMetadata = new ObjectMetadata();
-    objectMetadata.setContentType(file.getContentType()); // MultipartFile 객체로부터 MIME 타입을 얻어옴
-    objectMetadata.setContentLength(file.getSize());
-    return objectMetadata;
-  }
+//  private ObjectMetadata getObjectMetadata(MultipartFile file) {
+//    ObjectMetadata objectMetadata = new ObjectMetadata();
+//    objectMetadata.setContentType(file.getContentType()); // MultipartFile 객체로부터 MIME 타입을 얻어옴
+//    objectMetadata.setContentLength(file.getSize());
+//    return objectMetadata;
+//  }
 
 
   private void validateImageFile(MultipartFile file) {
@@ -116,6 +116,23 @@ public class S3ImageService {
       throw new IllegalArgumentException(fileExtension + " 는 지원하지 않는 형식의 확장자입니다.");
     }
 
+  }
+
+  private File convertMultipartFileToFile(MultipartFile multipartFile, long postId) throws IOException {
+
+    // System.getProperty("user.dir") -> 현재 디렉토리
+    // 프로젝트 최상위 폴더 내에 생성되었음 (경로를 넣지않으면 저장 후 파일을 찾을 수 없었음)
+    File file = new File(System.getProperty("user.dir") + "/" + postId + "-" + multipartFile.getOriginalFilename());
+    multipartFile.transferTo(file);
+    return file;
+  }
+
+  private void deleteFile(File file){
+    if(file.delete()){
+      log.info("File 삭제 성공: {}", file.getName());
+    }else {
+      log.info("File 삭제 실패: {}", file.getName());
+    }
   }
 
 }
