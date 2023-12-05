@@ -66,4 +66,9 @@ public class Post {
 
     return this;
   }
+
+  public Post removePost(){
+    this.postStatus = PostStatus.DELETED;
+    return this;
+  }
 }

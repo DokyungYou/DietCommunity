@@ -19,6 +19,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -82,6 +83,22 @@ public class PostController {
     return ResponseEntity.ok( postService.updatePostChallenge(memberDetails, challengeId, request, images));
   }
 
+
+  // 일반사용자가 이용하는 삭제기능 (실제 데이터를 바로 지우지는 않음)
+  @DeleteMapping("/{postId}")
+  public ResponseEntity<Void> removePost(@AuthenticationPrincipal MemberDetails memberDetails, @PathVariable long postId) {
+
+    postService.removePost(memberDetails, postId);
+    return ResponseEntity.ok().build();
+  }
+
+
+  @DeleteMapping("/challenges/{challengeId}")
+  public ResponseEntity<Void> removePostChallenge(@AuthenticationPrincipal MemberDetails memberDetails, @PathVariable long challengeId) {
+
+    postService.removeChallenge(memberDetails, challengeId);
+    return ResponseEntity.ok().build();
+  }
 
 
   @GetMapping

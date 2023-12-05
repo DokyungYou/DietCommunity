@@ -238,4 +238,34 @@ public class PostService {
     return challengeRepository.getChallengeList(categoryId, status, postSortType, pageable);
 
   }
+
+
+  @Transactional
+  public void removePost(MemberDetails memberDetails, long postId) {// 일반사용자가 이용하는 삭제기능 (실제 데이터를 바로 지우지는 않음)
+
+    Post post = postRepository.findById(postId)
+        .orElseThrow(() -> new PostException(ErrorCode.NOT_FOUND_POST));
+
+    if (!memberDetails.getMemberId().equals(post.getMember().getId())) {
+      throw new PostException(ErrorCode.CANNOT_EDIT_OTHERS_POST);
+    }
+
+    postRepository.save(post.removePost());
+  }
+
+  // Todo: 삭제할 수 없는 상황의 조건문 추가 -> 챌린지에 참여신청한 회원 존재 시 삭제불가 (참여신청기능 만들 때 추가하기)
+  @Transactional
+  public void removeChallenge(MemberDetails memberDetails, long challengeId) { // 일반사용자가 이용하는 삭제기능 (실제 데이터를 바로 지우지는 않음)
+
+    Challenge challenge = challengeRepository.findById(challengeId)
+        .orElseThrow(() -> new PostException(ErrorCode.NOT_FOUND_POST));
+
+    Post post = challenge.getPost();
+
+    if (!memberDetails.getMemberId().equals(post.getMember().getId())) {
+      throw new PostException(ErrorCode.CANNOT_EDIT_OTHERS_POST);
+    }
+
+    postRepository.save(post.removePost());
+  }
 }

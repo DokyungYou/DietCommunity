@@ -73,6 +73,7 @@ public class ChallengeWriteDto {
     private LocalDateTime registeredAt;
     private List<String> imageUrls;
 
+    private long challengeId;
     private LocalDate startDate;
     private LocalDate endDate;
     private int limitApplicantsNumber;
@@ -87,7 +88,7 @@ public class ChallengeWriteDto {
           .collect(Collectors.toList());
 
 
-      return ChallengeWriteDto.Response.builder()
+      return Response.builder()
           .postId(post.getId())
           .title(post.getTitle())
           .contents(post.getContents())
@@ -95,6 +96,7 @@ public class ChallengeWriteDto {
           .registeredAt(post.getCreatedAt())
           .imageUrls(imageUrls)
 
+          .challengeId(challenge.getId())
           .startDate(challenge.getChallengeStartDate())
           .endDate(challenge.getChallengeEndDate())
           .limitApplicantsNumber(challenge.getLimitApplicantsNumber())
